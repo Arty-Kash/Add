@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Python & JS 連携テスト</title>
+</head>
+<body>
+    <h1>数字の足し算アプリ</h1>
+    <p>ColabのPythonサーバーに計算をお願いします。</p>
+
+    <input type="number" id="num1" value="10"> + 
+    <input type="number" id="num2" value="20">
+    <button onclick="sendToPython()">計算する</button>
+
+    <h2 id="result">結果はここに表示されます</h2>
+
+    <script>
+        async function sendToPython() {
+            const n1 = document.getElementById('num1').value;
+            const n2 = document.getElementById('num2').value;
+            const resultElement = document.getElementById('result');
+
+            resultElement.innerText = "計算中...";
+
+            try {
+                // ここにColabで表示されたURLを貼り付け（末尾に /add を忘れずに！）
+                const url = "https://nikita-locular-evidently.ngrok-free.dev/add";
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ num1: parseFloat(n1), num2: parseFloat(n2) })
+                });
+
+                if (!response.ok) throw new Error("サーバーとの通信に失敗しました");
+
+                const data = await response.json();
+                resultElement.innerText = "答えは: " + data.sum;
+
+            } catch (error) {
+                console.error(error);
+                resultElement.innerText = "エラー: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
